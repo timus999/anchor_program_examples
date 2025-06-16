@@ -46,6 +46,11 @@ pub mod self_custodial_twitter_clone {
 
         Ok(())
     }
+
+    pub fn delete_account(_ctx: Context<Close>) -> Result<()> {
+        msg!("Account closed successfully");
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
@@ -99,6 +104,20 @@ pub struct UpdateTwitterAccount<'info> {
         bump = twitter_account.bump,
     )]
     pub twitter_account : Account<'info, TwitterAccount>,
+}
+
+#[derive(Accounts)]
+pub struct Close<'info>{
+    #[account(mut)]
+    pub signer: Signer<'info>,
+    // we will use 'close' for closing user's facebook account
+    #[account(
+        mut,
+        seeds = ["self-custodial-twitter-clone".as_bytes(), signer.key().as_ref()],
+        bump = twitter_account.bump,
+        close = signer
+    )]
+    pub twitter_account: Account<'info, TwitterAccount>,
 }
 
 #[error_code]

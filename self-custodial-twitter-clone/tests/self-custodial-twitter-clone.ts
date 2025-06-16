@@ -60,5 +60,19 @@ describe("self-custodial-twitter-clone", () => {
     expect(account.authority.toBase58()).to.equal(signer.publicKey.toBase58());
   });
 
-  
+  it("Close My Facebook Account", async () => {
+    const ix = await program.methods.deleteAccount()
+    const userTwitterAddress = (await ix.pubkeys()).twitterAccount
+    console.log("user twitter address :: ", userTwitterAddress.toString());  
+    // Create user's facebook address
+    const tx = await ix.rpc()
+    console.log("Your transaction signature", tx);
+    // User Details Not found, 'cuz we closed the account
+    try {
+      let userDetails = await program.account.twitterAccount.fetch(userTwitterAddress);
+      console.log(`Created a new account with following details \n Name :: ${userDetails.username} \n Status :: ${userDetails.bio} \n Twitter :: ${userDetails.latestTweet}`)
+    } catch {
+      console.log("User Details Not found, 'cuz we close the account");
+    }
+  });
 });
